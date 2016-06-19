@@ -1,6 +1,4 @@
 import { createStore, applyMiddleware, compose } from 'redux';
-import { fromJS } from 'immutable';
-import persistState from 'redux-localstorage';
 import thunk from 'redux-thunk';
 import promiseMiddleware from '../middleware/promise-middleware';
 import { browserHistory } from 'react-router';
@@ -34,7 +32,6 @@ function _getMiddleware() {
 
 function _getEnhancers() {
   let enhancers = [
-    persistState('session', _getStorageConfig()),
   ];
 
   if (__DEV__ && window.devToolsExtension) {
@@ -51,19 +48,6 @@ function _enableHotLoader(store) {
       store.replaceReducer(nextRootReducer);
     });
   }
-}
-
-function _getStorageConfig() {
-  return {
-    key: 'react-redux-seed',
-    serialize: (store) => {
-      return store && store.session ?
-        JSON.stringify(store.session.toJS()) : store;
-    },
-    deserialize: (state) => ({
-      session: state ? fromJS(JSON.parse(state)) : fromJS({}),
-    }),
-  };
 }
 
 export default configureStore;

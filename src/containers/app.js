@@ -1,75 +1,67 @@
 import React from 'react';
 import { connect } from 'react-redux';
-
-import { loginUser, logoutUser } from '../actions/session';
-
-import { Link } from 'react-router';
-import Button from '../components/button';
-import Content from '../components/content';
-import LoginModal from '../components/login/login-modal';
-import Logo from '../components/logo';
-import Navigator from '../components/navigator';
-import NavigatorItem from '../components/navigator-item';
+import * as BusPredictionsActions from '../actions/busPredictions';
+import * as GeopositionAction from '../actions/geoposition';
 
 function mapStateToProps(state) {
   return {
-    session: state.session,
-    router: state.router,
+    busPredictions: state.busPredictions,
+    geoposition: state.geoposition,
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
-    login: () => dispatch(loginUser()),
-    logout: () => dispatch(logoutUser()),
+    getBusPredictions: (longitude, latitude) =>
+      dispatch(BusPredictionsActions.getBusPredictions(longitude, latitude)),
+    getGeoposition: () => dispatch(GeopositionAction.getGeoposition()),
   };
 }
 
-function App({ children, session, login, logout }) {
-  const token = session.get('token', false);
-  const isLoggedIn = token && token !== null && typeof token !== 'undefined';
-  const firstName = session.getIn(['user', 'first'], '');
-  const lastName = session.getIn(['user', 'last'], '');
+class App extends React.Component {
+  componentDidMount() {
+    const { props } = this;
+    props.getGeoposition();
+  }
 
-  return (
-    <div>
-      <LoginModal
-        onSubmit={ login }
-        isPending={ session.get('isLoading', false) }
-        hasError={ session.get('hasError', false) }
-        isVisible={ !isLoggedIn } />
-      <Navigator testid="navigator">
-        <NavigatorItem mr>
-          <Logo />
-        </NavigatorItem>
-        <NavigatorItem isVisible={ isLoggedIn } mr>
-          <Link to="/">Counter</Link>
-        </NavigatorItem>
-        <NavigatorItem isVisible={ isLoggedIn }>
-          <Link to="/about">About Us</Link>
-        </NavigatorItem>
-        <div className="flex flex-auto"></div>
-        <NavigatorItem isVisible={ isLoggedIn } mr>
-          <div data-testid="user-profile" className="h3">{ `${ firstName } ${ lastName }` }</div>
-        </NavigatorItem>
-        <NavigatorItem isVisible={ isLoggedIn }>
-          <Button onClick={ logout } className="bg-red white">
-            Logout
-          </Button>
-        </NavigatorItem>
-      </Navigator>
-      <Content isVisible={ isLoggedIn }>
-        { children }
-      </Content>
-    </div>
-  );
+  componentWillReceiveProps(nextProps) {
+    const newGeoposition = nextProps.geoposition;
+    const newCoordinates = newGeoposition.get('coordinates', {});
+    const currGeoposition = this.props.geoposition;
+    const currCoordinates = currGeoposition.get('coordinates', {});
+
+    if (!newCoordinates.isEmpty() && !newCoordinates.equals(currCoordinates)) {
+      nextProps.getBusPredictions();
+    }
+  }
+
+  render() {
+    const { props } = this;
+    const busRoutes = props.busPredictions.get('busPredictionsData').map((pred, index) => {
+      const routeID = pred.get('route').get('id');
+      const stopTitle = pred.get('stop').get('title');
+      return (
+        <div key={ index }>
+          { routeID }
+          <br />
+          { stopTitle }
+          <hr />
+        </div>
+      );
+    });
+    return (
+      <div>
+        { busRoutes }
+        { props.children }
+      </div>
+    );
+  }
 }
 
 App.propTypes = {
   children: React.PropTypes.node,
-  session: React.PropTypes.object,
-  login: React.PropTypes.func,
-  logout: React.PropTypes.func,
+  busPredictions: React.PropTypes.object,
+  geoposition: React.PropTypes.object,
 };
 
 export default connect(

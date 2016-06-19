@@ -1,12 +1,12 @@
 import { combineReducers } from 'redux';
 import { routerReducer } from 'react-router-redux';
 import { reducer as formReducer } from 'redux-form';
-import counter from './counter';
-import session from './session';
+import busPredictions from './bus-predictions';
+import geoposition from './geoposition';
 
 const rootReducer = combineReducers({
-  session,
-  counter,
+  busPredictions,
+  geoposition,
   routing: routerReducer,
   form: formReducer,
 });
