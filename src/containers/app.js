@@ -2,6 +2,8 @@ import React from 'react';
 import { connect } from 'react-redux';
 import * as BusPredictionsActions from '../actions/busPredictions';
 import * as GeopositionAction from '../actions/geoposition';
+import RoutesList from '../components/routes-list';
+import { arePositionsClose } from '../utils/geoposition';
 
 function mapStateToProps(state) {
   return {
@@ -22,6 +24,10 @@ class App extends React.Component {
   componentDidMount() {
     const { props } = this;
     props.getGeoposition();
+    setInterval(() => {
+      props.getGeoposition();
+      props.getBusPredictions();
+    }, 5000);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -30,28 +36,23 @@ class App extends React.Component {
     const currGeoposition = this.props.geoposition;
     const currCoordinates = currGeoposition.get('coordinates', {});
 
-    if (!newCoordinates.isEmpty() && !newCoordinates.equals(currCoordinates)) {
-      nextProps.getBusPredictions();
+    if (!newCoordinates.isEmpty() &&
+      !arePositionsClose(newCoordinates.toJS(), currCoordinates.toJS())) {
+      // nextProps.getBusPredictions();
+    } else {
+      // initiate locating spinner
     }
   }
 
   render() {
     const { props } = this;
-    const busRoutes = props.busPredictions.get('busPredictionsData').map((pred, index) => {
-      const routeID = pred.get('route').get('id');
-      const stopTitle = pred.get('stop').get('title');
-      return (
-        <div key={ index }>
-          { routeID }
-          <br />
-          { stopTitle }
-          <hr />
-        </div>
-      );
-    });
     return (
       <div>
-        { busRoutes }
+        <RoutesList
+          busPredictionsData={
+            props.busPredictions.get('busPredictionsData')
+          }
+        />
         { props.children }
       </div>
     );
