@@ -1,22 +1,24 @@
-[![Circle CI](https://circleci.com/gh/rangle/react-redux-starter.svg?style=svg)](https://circleci.com/gh/rangle/react-redux-starter) [![Stories in Ready](https://badge.waffle.io/rangle/rangle-starter.png?label=ready&title=Ready)](https://waffle.io/rangle/rangle-starter)
+# Public Transit
+Public Transit is an web app that finds the near by transits and provides a
+list of the upcoming busses or street cars and their arrival times in minutes.
 
-# react-redux-starter
-
-> Rangle.io official React + Redux starter
+It first locates the user's coordinates, and then it sends a request to a
+public transit endpoint with those coordinates.
+The server responds with the data of the close-by transits.
+Each transit object contains:
+- agency (ID - i.e. TTC, title, etc.)
+- route (ID and title)
+- stop (ID, distance and title)
+- values (of when the next vehicle will approach the stop)
 
 ## Getting Started
-
-Use our [starter script](https://www.npmjs.com/package/rangle-starter), with
-`react-redux-starter` as the `techStack` argument.
-
-## npm scripts
 
 ### Dev
 ```bash
 $ npm run dev
 ```
 
-This runs a development mode server with live reload etc.
+To run a development mode server with live reload:
 
 Open `http://localhost:8080` in your browser.
 
@@ -48,33 +50,3 @@ $ npm run test:watch
 ```bash
 $ npm run cover
 ```
-
-#### Connecting to remote APIs
-
-Both the devmode and production servers provide a way to proxy requests to
-remote HTTP APIs.  This can be useful for working around CORS issues when
-developing your software.
-
-Edit [this file](server/proxy-config.js) to mount such APIs at a given path.
-
-## Improvements
-
-This is an initial version of this setup and will be expanded in the future. Refer to the [issues section](https://github.com/rangle/rangle-starter/issues) to see what needs to be done, or create a [new one](https://github.com/rangle/rangle-starter/issues/new).
-
-Issues for this particular starter project are tagged with the 'es6-react' label.
-
-## If something doesn't work
-
-We centralize issue management for all rangle starters in the [rangle-starter](https://github.com/rangle/rangle-starter) repository, to help us keep things consistent.
-
-Refer to the [issues section](https://github.com/rangle/rangle-starter/issues) to see if this has already been logged. Otherwise create a [new issue](https://github.com/rangle/rangle-starter/issues/new).
-
-Be sure to tag your new issue with the 'es6-react' label so we can see which starter you're filing it for.
-
-## License
-
-Copyright (c) 2015 rangle.io
-
-[MIT License][MIT]
-
-[MIT]: ./LICENSE "Mit License"

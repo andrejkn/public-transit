@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import * as BusPredictionsActions from '../actions/busPredictions';
 import * as GeopositionAction from '../actions/geoposition';
 import RoutesList from '../components/routes-list';
-import { arePositionsClose } from '../utils/geoposition';
 
 function mapStateToProps(state) {
   return {
@@ -30,18 +29,8 @@ class App extends React.Component {
     }, 5000);
   }
 
-  componentWillReceiveProps(nextProps) {
-    const newGeoposition = nextProps.geoposition;
-    const newCoordinates = newGeoposition.get('coordinates', {});
-    const currGeoposition = this.props.geoposition;
-    const currCoordinates = currGeoposition.get('coordinates', {});
-
-    if (!newCoordinates.isEmpty() &&
-      !arePositionsClose(newCoordinates.toJS(), currCoordinates.toJS())) {
-      // nextProps.getBusPredictions();
-    } else {
-      // initiate locating spinner
-    }
+  shouldComponentUpdate(nextProps) {
+    return (nextProps.busPredictions.get('busPredictionsData').size > 0);
   }
 
   render() {
